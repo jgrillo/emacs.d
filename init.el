@@ -42,8 +42,8 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-(setq user-full-name "Bozhidar Batsov"
-      user-mail-address "bozhidar@batsov.com")
+(setq user-full-name "Jesse C. Grillo"
+      user-mail-address "jgrillo@graplsecurity.com")
 
 ;; Always load newest byte code
 (setq load-prefer-newer t)
@@ -70,8 +70,8 @@
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 
-;; the blinking cursor is nothing, but an annoyance
-(blink-cursor-mode -1)
+;; the blinking cursor is nice
+(blink-cursor-mode 1)
 
 ;; disable the annoying bell ring
 (setq ring-bell-function 'ignore)
@@ -251,27 +251,6 @@
   ;; enable some really cool extensions like C-x C-j(dired-jump)
   (require 'dired-x))
 
-(use-package lisp-mode
-  :config
-  (defun bozhidar-visit-ielm ()
-    "Switch to default `ielm' buffer.
-Start `ielm' if it's not already running."
-    (interactive)
-    (crux-start-or-switch-to 'ielm "*ielm*"))
-
-  (add-hook 'emacs-lisp-mode-hook #'eldoc-mode)
-  (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'bozhidar-visit-ielm)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-c") #'eval-defun)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-b") #'eval-buffer)
-  (add-hook 'lisp-interaction-mode-hook #'eldoc-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode))
-
-(use-package ielm
-  :config
-  (add-hook 'ielm-mode-hook #'eldoc-mode)
-  (add-hook 'ielm-mode-hook #'rainbow-delimiters-mode))
-
 ;;; third-party packages
 (use-package zenburn-theme
   :ensure t
@@ -387,54 +366,6 @@ Start `ielm' if it's not already running."
   (setq whitespace-line-column 80) ;; limit line length
   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
-(use-package inf-ruby
-  :ensure t
-  :config
-  (add-hook 'ruby-mode-hook #'inf-ruby-minor-mode))
-
-(use-package ruby-mode
-  :config
-  (setq ruby-insert-encoding-magic-comment nil)
-  (add-hook 'ruby-mode-hook #'subword-mode))
-
-(use-package clojure-mode
-  :ensure t
-  :config
-  (add-hook 'clojure-mode-hook #'paredit-mode)
-  (add-hook 'clojure-mode-hook #'subword-mode)
-  (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
-
-(use-package cider
-  :ensure t
-  :config
-  (setq nrepl-log-messages t)
-  (add-hook 'cider-mode-hook #'eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode)
-  (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode))
-
-(use-package flycheck-joker
-  :ensure t)
-
-(use-package elixir-mode
-  :ensure t
-  :config
-  (add-hook 'elixir-mode #'subword-mode))
-
-(use-package erlang
-  :ensure t
-  :config
-  (when (eq system-type 'windows-nt)
-    (setq erlang-root-dir "C:/Program Files/erl7.2")
-    (add-to-list 'exec-path "C:/Program Files/erl7.2/bin")))
-
-(use-package haskell-mode
-  :ensure t
-  :config
-  (add-hook 'haskell-mode-hook #'subword-mode)
-  (add-hook 'haskell-mode-hook #'interactive-haskell-mode)
-  (add-hook 'haskell-mode-hook #'haskell-doc-mode))
-
 (use-package web-mode
   :ensure t
   :custom
@@ -500,6 +431,11 @@ Start `ielm' if it's not already running."
   (global-company-mode)
   (diminish 'company-mode))
 
+(use-package company-quickhelp
+  :ensure t
+  :config 
+             )
+
 (use-package hl-todo
   :ensure t
   :config
@@ -518,8 +454,6 @@ Start `ielm' if it's not already running."
 
 (use-package flyspell
   :config
-  (when (eq system-type 'windows-nt)
-    (add-to-list 'exec-path "C:/Program Files (x86)/Aspell/bin/"))
   (setq ispell-program-name "aspell" ; use aspell instead of ispell
         ispell-extra-args '("--sug-mode=ultra"))
   (add-hook 'text-mode-hook #'flyspell-mode)
@@ -529,9 +463,6 @@ Start `ielm' if it's not already running."
   :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
-
-(use-package flycheck-eldev
-  :ensure t)
 
 (use-package super-save
   :ensure t
@@ -593,55 +524,16 @@ Start `ielm' if it's not already running."
   (global-undo-tree-mode +1)
   (diminish 'undo-tree-mode))
 
-;; (use-package ivy
-;;   :ensure t
-;;   :config
-;;   (ivy-mode 1)
-;;   (setq ivy-use-virtual-buffers t)
-;;   (setq enable-recursive-minibuffers t)
-;;   (global-set-key (kbd "C-c C-r") 'ivy-resume)
-;;   (global-set-key (kbd "<f6>") 'ivy-resume))
-;;
-;; (use-package swiper
-;;   :ensure t
-;;   :config
-;;   (global-set-key "\C-s" 'swiper))
-;;
-;; (use-package counsel
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "M-x") 'counsel-M-x)
-;;   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-;;   (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-;;   (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-;;   (global-set-key (kbd "<f1> l") 'counsel-find-library)
-;;   (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-;;   (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-;;   (global-set-key (kbd "C-c g") 'counsel-git)
-;;   (global-set-key (kbd "C-c j") 'counsel-git-grep)
-;;   (global-set-key (kbd "C-c a") 'counsel-ag)
-;;   (global-set-key (kbd "C-x l") 'counsel-locate)
-;;   (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+(use-package swiper
+  :ensure t
+  :config
+  (global-set-key "\C-s" 'swiper))
 
 (use-package ace-window
   :ensure t
   :config
   (global-set-key (kbd "s-w") 'ace-window)
   (global-set-key [remap other-window] 'ace-window))
-
-;; super useful for demos
-(use-package keycast
-  :ensure t)
-
-(use-package gif-screencast
-  :ensure t
-  :config
-  ;; To shut up the shutter sound of `screencapture' (see `gif-screencast-command').
-  (setq gif-screencast-args '("-x"))
-  ;; Optional: Used to crop the capture to the Emacs frame.
-  (setq gif-screencast-cropping-program "mogrify")
-  ;; Optional: Required to crop captured images.
-  (setq gif-screencast-capture-format "ppm"))
 
 ;; temporarily highlight changes from yanking, etc
 (use-package volatile-highlights
@@ -650,36 +542,75 @@ Start `ielm' if it's not already running."
   (volatile-highlights-mode +1)
   (diminish 'volatile-highlights-mode))
 
-;; WSL-specific setup
-(when (and (eq system-type 'gnu/linux) (getenv "WSLENV"))
-  (set-frame-font "DejaVu Sans Mono 28")
+;; lsp
+(use-package lsp-mode
+  :bind
+  ("M-." . 'lsp-find-definition)
+  ("M-t" . 'lsp-find-type)
+  ("M-?" . 'lsp-find-references)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (require 'lsp-clients)
+  (setq lsp-prefer-flymake nil)
+  (setq lsp-rust-server 'rust-analyzer)
+  :hook (
+         (python-mode . lsp-deferred)
+         (rust-mode . lsp-deferred)
+         (typescript-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred))
 
-  ;; Teach Emacs how to open links in your default Windows browser
-  (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
-        (cmd-args '("/c" "start")))
-    (when (file-exists-p cmd-exe)
-      (setq browse-url-generic-program  cmd-exe
-            browse-url-generic-args     cmd-args
-            browse-url-browser-function 'browse-url-generic
-            search-web-default-browser 'browse-url-generic))))
+(use-package lsp-ui :commands lsp-ui-mode)
 
-;; Windows-specific setup
-(when (eq system-type 'windows-nt)
-  (setq w32-pass-lwindow-to-system nil)
-  (setq w32-lwindow-modifier 'super) ; Left Windows key
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-  (setq w32-pass-rwindow-to-system nil)
-  (setq w32-rwindow-modifier 'super) ; Right Windows key
+;; optionally if you want to use debugger
+;; (use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
-  (setq w32-pass-apps-to-system nil)
-  (setq w32-apps-modifier 'hyper) ; Menu/App key
+;; python
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
 
-  (set-frame-font "Source Code Pro 12")
-  (add-to-list 'exec-path "C:/Program Files/Git/bin")
-  (add-to-list 'exec-path "C:/Program Files/Git/mingw64/bin")
-  (setenv "PATH" (concat "C:/Program Files/Git/bin;" "C:/Program Files/Git/mingw64/bin;" (getenv "PATH")))
-  ;; needed for arc-mode
-  (add-to-list 'exec-path "C:/Program Files/7-Zip"))
+;; rust
+(use-package rust-mode
+  :bind
+  ("C-c g" . rust-run)
+  ("C-c t" . rust-test)
+  ("C-c b" . cargo-process-build)
+  :init
+  (which-function-mode 1)
+  (setq compilation-error-regexp-alist-alist
+    (cons '(cargo "^\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\): \\([0-9]+\\):\\([0-9]+\\) \\(?:[Ee]rror\\|\\([Ww]arning\\)\\):" 1 (2 . 4) (3 . 5) (6))
+      compilation-error-regexp-alist-alist))
+  :config
+  (setq rust-format-on-save t))
+
+(use-package toml-mode)
+
+(use-package cargo
+  :hook (rust-mode . cargo-minor-mode)
+  :diminish cargo-minor-mode)
+
+(use-package flycheck-rust
+  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
+;; typescript
+(use-package typescript-mode
+  :config
+  (add-hook 'lsp-after-open-hook #'lsp-enable-imenu)
+  :hook
+  (lambda () (run-hooks '(lambda ()
+                            (interactive)
+                            (flycheck-mode 1)
+                            (setq flycheck-check-syntax-automatically '(save mode-enabled))
+                            (eldoc-mode 1)
+                            (company-quickhelp-mode 1)))))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
