@@ -20,3 +20,6 @@ session*
 tramp
 /var/pcache
 custom.el
+transient
+var
+.lsp-*

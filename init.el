@@ -92,9 +92,6 @@
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; maximize the initial frame automatically
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
-
 ;; more useful frame title, that show either a file or a
 ;; buffer name (if the buffer isn't visiting a file)
 (setq frame-title-format
@@ -433,7 +430,7 @@
 
 (use-package company-quickhelp
   :ensure t
-  :config 
+  :config
              )
 
 (use-package hl-todo
@@ -551,7 +548,6 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
-  (require 'lsp-clients)
   (setq lsp-prefer-flymake nil)
   (setq lsp-rust-server 'rust-analyzer)
   :hook (
@@ -579,6 +575,7 @@
 
 ;; rust
 (use-package rust-mode
+  :ensure t
   :bind
   ("C-c g" . rust-run)
   ("C-c t" . rust-test)
@@ -591,26 +588,26 @@
   :config
   (setq rust-format-on-save t))
 
-(use-package toml-mode)
+(use-package toml-mode :ensure t)
 
 (use-package cargo
+  :ensure t
   :hook (rust-mode . cargo-minor-mode)
   :diminish cargo-minor-mode)
 
 (use-package flycheck-rust
+  :ensure t
   :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;; typescript
 (use-package typescript-mode
+  :ensure t
   :config
   (add-hook 'lsp-after-open-hook #'lsp-enable-imenu)
-  :hook
-  (lambda () (run-hooks '(lambda ()
-                            (interactive)
-                            (flycheck-mode 1)
-                            (setq flycheck-check-syntax-automatically '(save mode-enabled))
-                            (eldoc-mode 1)
-                            (company-quickhelp-mode 1)))))
+  (company-quickhelp-mode 1)
+  (flycheck-mode 1)
+  (eldoc-mode 1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled)))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
