@@ -89,6 +89,9 @@
 (column-number-mode t)
 (size-indication-mode t)
 
+;; line numbers are also nice
+(global-display-line-numbers-mode 1)
+
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -173,15 +176,18 @@
 
 ;;; built-in packages
 (use-package paren
+  :ensure t
   :config
   (show-paren-mode +1))
 
 (use-package elec-pair
+  :ensure t
   :config
   (electric-pair-mode +1))
 
 ;; highlight the current line
 (use-package hl-line
+  :ensure t
   :config
   (global-hl-line-mode +1))
 
@@ -201,12 +207,14 @@
 
 ;; saveplace remembers your location in a file when saving files
 (use-package saveplace
+  :ensure t
   :config
   (setq save-place-file (expand-file-name "saveplace" bozhidar-savefile-dir))
   ;; activate it for all buffers
   (setq-default save-place t))
 
 (use-package savehist
+  :ensure t
   :config
   (setq savehist-additional-variables
         ;; search entries
@@ -218,6 +226,7 @@
   (savehist-mode +1))
 
 (use-package recentf
+  :ensure t
   :config
   (setq recentf-save-file (expand-file-name "recentf" bozhidar-savefile-dir)
         recentf-max-saved-items 500
@@ -228,6 +237,7 @@
   (recentf-mode +1))
 
 (use-package windmove
+  :ensure t
   :config
   ;; use shift + arrow keys to switch between visible buffers
   (windmove-default-keybindings))
@@ -336,8 +346,7 @@
 (use-package exec-path-from-shell
   :ensure t
   :config
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize)))
+  (exec-path-from-shell-initialize))
 
 (use-package move-text
   :ensure t
@@ -355,6 +364,7 @@
   (diminish 'rainbow-mode))
 
 (use-package whitespace
+  :ensure t
   :init
   (dolist (hook '(prog-mode-hook text-mode-hook))
     (add-hook hook #'whitespace-mode))
@@ -417,7 +427,7 @@
 (use-package company
   :ensure t
   :config
-  (setq company-idle-delay 0.5)
+  (setq company-idle-delay 0.1)
   (setq company-show-numbers t)
   (setq company-tooltip-limit 10)
   (setq company-minimum-prefix-length 2)
@@ -450,6 +460,7 @@
          ("s-i" . imenu-anywhere)))
 
 (use-package flyspell
+  :ensure t
   :config
   (setq ispell-program-name "aspell" ; use aspell instead of ispell
         ispell-extra-args '("--sug-mode=ultra"))
@@ -541,6 +552,7 @@
 
 ;; lsp
 (use-package lsp-mode
+  :ensure t
   :bind
   ("M-." . 'lsp-find-definition)
   ("M-t" . 'lsp-find-type)
@@ -548,19 +560,26 @@
   :init
   (setq lsp-keymap-prefix "C-c l")
   :config
+  (setq lsp-auto-guess-root nil)
   (setq lsp-prefer-flymake nil)
   (setq lsp-rust-server 'rust-analyzer)
   :hook (
-         (python-mode . lsp-deferred)
          (rust-mode . lsp-deferred)
          (typescript-mode . lsp-deferred)
          (lsp-mode . lsp-enable-which-key-integration))
   :commands (lsp lsp-deferred))
 
-(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
 
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-ivy
+  :ensure t
+  :commands lsp-ivy-workspace-symbol)
+
+(use-package lsp-treemacs
+  :ensure t
+  :commands lsp-treemacs-errors-list)
 
 ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
@@ -570,8 +589,15 @@
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))
+                         (require 'lsp-pyright)
+                         (lsp-deferred))))
+
+(use-package python-mode
+  :ensure t
+  :config
+  (company-quickhelp-mode 1)
+  (flycheck-mode 1)
+  (eldoc-mode 1))
 
 ;; rust
 (use-package rust-mode
@@ -586,6 +612,9 @@
     (cons '(cargo "^\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\): \\([0-9]+\\):\\([0-9]+\\) \\(?:[Ee]rror\\|\\([Ww]arning\\)\\):" 1 (2 . 4) (3 . 5) (6))
       compilation-error-regexp-alist-alist))
   :config
+  (company-quickhelp-mode 1)
+  (flycheck-mode 1)
+  (eldoc-mode 1)
   (setq rust-format-on-save t))
 
 (use-package toml-mode :ensure t)
