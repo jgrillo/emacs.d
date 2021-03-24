@@ -31,6 +31,8 @@
 
 ;;; Code:
 
+(setq comp-deferred-compilation t)
+
 (require 'package)
 
 (add-to-list 'package-archives
@@ -49,8 +51,8 @@
 (setq load-prefer-newer t)
 
 ;; reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;; each 100MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold (* 100 1024 1024)) ;; 100mb
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
@@ -69,6 +71,9 @@
 ;; already disabled anyway
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
+;; same for menu bar
+(when (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
 
 ;; the blinking cursor is nice
 (blink-cursor-mode 1)
@@ -236,12 +241,6 @@
         recentf-auto-cleanup 'never)
   (recentf-mode +1))
 
-(use-package windmove
-  :ensure t
-  :config
-  ;; use shift + arrow keys to switch between visible buffers
-  (windmove-default-keybindings))
-
 (use-package dired
   :config
   ;; dired - reuse current buffer by pressing 'a'
@@ -272,32 +271,14 @@
   (diminish 'flyspell-prog-mode)
   (diminish 'eldoc-mode))
 
-(use-package avy
-  :ensure t
-  :bind (("s-." . avy-goto-word-or-subword-1)
-         ("s-," . avy-goto-char)
-         ("C-c ." . avy-goto-word-or-subword-1)
-         ("C-c ," . avy-goto-char)
-         ("M-g f" . avy-goto-line)
-         ("M-g w" . avy-goto-word-or-subword-1))
-  :config
-  (setq avy-background t))
-
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status)))
 
-(use-package git-timemachine
-  :ensure t
-  :bind (("s-g" . git-timemachine)))
-
-(use-package ag
-  :ensure t)
-
 (use-package projectile
   :ensure t
   :init
-  (setq projectile-project-search-path '("~/projects/" "~/work/"))
+  (setq projectile-project-search-path '("~/src"))
   :config
   ;; I typically use this keymap prefix on macOS
   (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
@@ -305,20 +286,6 @@
   (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
   (global-set-key (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
-
-(use-package pt
-  :ensure t)
-
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
-
-(use-package elisp-slime-nav
-  :ensure t
-  :config
-  (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook))
-    (add-hook hook #'elisp-slime-nav-mode))
-  (diminish 'elisp-slime-nav-mode))
 
 (use-package paredit
   :ensure t
@@ -331,13 +298,6 @@
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
   (diminish 'paredit-mode "()"))
 
-(use-package anzu
-  :ensure t
-  :bind (("M-%" . anzu-query-replace)
-         ("C-M-%" . anzu-query-replace-regexp))
-  :config
-  (global-anzu-mode))
-
 (use-package easy-kill
   :ensure t
   :config
@@ -347,21 +307,6 @@
   :ensure t
   :config
   (exec-path-from-shell-initialize))
-
-(use-package move-text
-  :ensure t
-  :bind
-  (([(meta shift up)] . move-text-up)
-   ([(meta shift down)] . move-text-down)))
-
-(use-package rainbow-delimiters
-  :ensure t)
-
-(use-package rainbow-mode
-  :ensure t
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-mode)
-  (diminish 'rainbow-mode))
 
 (use-package whitespace
   :ensure t
@@ -389,40 +334,10 @@
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . gfm-mode))
   :config
-  (setq markdown-fontify-code-blocks-natively t)
-  :preface
-  (defun jekyll-insert-image-url ()
-    (interactive)
-    (let* ((files (directory-files "../assets/images"))
-           (selected-file (completing-read "Select image: " files nil t)))
-      (insert (format "![%s](/assets/images/%s)" selected-file selected-file))))
-
-  (defun jekyll-insert-post-url ()
-    (interactive)
-    (let* ((files (remove "." (mapcar #'file-name-sans-extension (directory-files "."))))
-           (selected-file (completing-read "Select article: " files nil t)))
-      (insert (format "{%% post_url %s %%}" selected-file)))))
-
-(use-package adoc-mode
-  :ensure t
-  :mode "\\.adoc\\'")
+  (setq markdown-fontify-code-blocks-natively t))
 
 (use-package yaml-mode
   :ensure t)
-
-(use-package cask-mode
-  :ensure t)
-
-(use-package selectrum
-  :ensure t
-  :config
-  (selectrum-mode +1))
-
-(use-package selectrum-prescient
-  :ensure t
-  :config
-  (selectrum-prescient-mode +1)
-  (prescient-persist-mode +1))
 
 (use-package company
   :ensure t
@@ -441,7 +356,7 @@
 (use-package company-quickhelp
   :ensure t
   :config
-             )
+  (setq company-quickhelp-delay .1))
 
 (use-package hl-todo
   :ensure t
@@ -449,10 +364,16 @@
   (setq hl-todo-highlight-punctuation ":")
   (global-hl-todo-mode))
 
-(use-package zop-to-char
+(use-package selectrum
   :ensure t
-  :bind (("M-z" . zop-up-to-char)
-         ("M-Z" . zop-to-char)))
+  :config
+  (selectrum-mode +1))
+
+(use-package selectrum-prescient
+  :ensure t
+  :config
+  (selectrum-prescient-mode +1)
+  (prescient-persist-mode +1))
 
 (use-package imenu-anywhere
   :ensure t
@@ -554,32 +475,49 @@
 (use-package lsp-mode
   :ensure t
   :bind
-  ("M-." . 'lsp-find-definition)
+  ;("M-." . 'lsp-find-definition)
   ("M-t" . 'lsp-find-type)
-  ("M-?" . 'lsp-find-references)
+  ;("M-?" . 'lsp-find-references)
   :init
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (setq lsp-keymap-prefix "C-c l")
   :config
   (setq lsp-auto-guess-root nil)
-  (setq lsp-prefer-flymake nil)
-  (setq lsp-rust-server 'rust-analyzer)
+  (setq lsp-completion-enable 1)
+  (setq lsp-enable-dap-auto-configure 1)
+  (setq lsp-enable-xref 1)
+  (setq lsp-enable-file-watchers nil)
+  (setq lsp-enable-imenu 1)
+  (setq lsp-enable-indentation 1)
   :hook (
          (rust-mode . lsp-deferred)
-         (typescript-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration))
+         (typescript-mode . lsp-deferred))
   :commands (lsp lsp-deferred))
 
 (use-package lsp-ui
   :ensure t
+  :config
+  ;; lsp-ui-sideline
+  (lsp-ui-sideline-enable nil)
+  ;; lsp-ui-peek
+  (setq lsp-ui-peek-enable 1)
+  (setq lsp-ui-peek-always-show 1)
+  (setq lsp-ui-peek-show-directory 1)
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  ;; lsp-ui-doc
+  (lsp-ui-doc-enable 1)
+  (setq lsp-ui-doc-delay .1)
+  (setq lsp-ui-doc-show-with-cursor 1)
+  (setq lsp-ui-doc-show-with-mouse 1)
+  ;; lsp-ui-imenu
+  (setq lsp-ui-imenu-auto-refresh 1)
+  (setq lsp-ui-imenu-auto-refresh-delay .1)
   :commands lsp-ui-mode)
 
 (use-package lsp-ivy
   :ensure t
   :commands lsp-ivy-workspace-symbol)
-
-(use-package lsp-treemacs
-  :ensure t
-  :commands lsp-treemacs-errors-list)
 
 ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
@@ -590,14 +528,18 @@
   :ensure t
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
-                         (lsp-deferred))))
+                         (lsp-deferred)))
+  :config
+  (setq lsp-pyright-use-library-code-for-types nil))
+
+(use-package pyvenv
+  :ensure t)
 
 (use-package python-mode
   :ensure t
   :config
   (company-quickhelp-mode 1)
-  (flycheck-mode 1)
-  (eldoc-mode 1))
+  (flycheck-mode 1))
 
 ;; rust
 (use-package rust-mode
@@ -614,7 +556,6 @@
   :config
   (company-quickhelp-mode 1)
   (flycheck-mode 1)
-  (eldoc-mode 1)
   (setq rust-format-on-save t))
 
 (use-package toml-mode :ensure t)
@@ -635,7 +576,6 @@
   (add-hook 'lsp-after-open-hook #'lsp-enable-imenu)
   (company-quickhelp-mode 1)
   (flycheck-mode 1)
-  (eldoc-mode 1)
   (setq flycheck-check-syntax-automatically '(save mode-enabled)))
 
 ;; config changes made through the customize UI will be stored here
