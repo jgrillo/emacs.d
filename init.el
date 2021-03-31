@@ -510,6 +510,7 @@
   (setq lsp-ui-doc-delay .1)
   (setq lsp-ui-doc-show-with-cursor 1)
   (setq lsp-ui-doc-show-with-mouse 1)
+  (setq lsp-ui-doc-alignment 'window)
   ;; lsp-ui-imenu
   (setq lsp-ui-imenu-auto-refresh 1)
   (setq lsp-ui-imenu-auto-refresh-delay .1)
@@ -577,6 +578,14 @@
   (company-quickhelp-mode 1)
   (flycheck-mode 1)
   (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+
+;; docker
+(use-package dockerfile-mode
+  :ensure t
+  :mode
+  ("Dockerfile\\'" . dockerfile-mode)
+  :config
+  (setq-default docker-use-sudo nil))
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
