@@ -263,6 +263,9 @@
   :config
   (load-theme 'zenburn t))
 
+(use-package anti-zenburn-theme
+  :ensure t)
+
 (use-package diminish
   :ensure t
   :config
@@ -587,6 +590,18 @@
   :config
   (setq-default docker-use-sudo nil))
 
+;; protobuf
+(defconst protobuf-style
+  '((c-basic-offset . 4)
+    (indent-tabs-mode . nil)))
+
+(use-package protobuf-mode
+  :ensure t
+  :config
+  (add-hook 'protobuf-mode-hook
+            (lambda ()
+              (c-add-style "protobuf-style" protobuf-style t))))
+
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
@@ -594,3 +609,4 @@
   (load custom-file))
 
 ;;; init.el ends here
+(put 'upcase-region 'disabled nil)
