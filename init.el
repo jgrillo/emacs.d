@@ -532,9 +532,7 @@
   :ensure t
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
-                         (lsp-deferred)))
-  :config
-  (setq lsp-pyright-use-library-code-for-types nil))
+                         (lsp-deferred))))
 
 (use-package pyvenv
   :ensure t)
