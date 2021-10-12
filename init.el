@@ -590,7 +590,7 @@
 
 ;; protobuf
 (defconst protobuf-style
-  '((c-basic-offset . 4)
+  '((c-basic-offset . 2)
     (indent-tabs-mode . nil)))
 
 (use-package protobuf-mode
