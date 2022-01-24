@@ -600,6 +600,12 @@
             (lambda ()
               (c-add-style "protobuf-style" protobuf-style t))))
 
+;; hcl
+(use-package hcl-mode
+  :ensure t
+  :mode (("\\.nomad\\'" . hcl-mode)
+         ("\\.hcl\\'" . hcl-mode)))
+
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
