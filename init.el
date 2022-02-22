@@ -476,47 +476,64 @@
 
 ;; lsp
 (use-package lsp-mode
-  :ensure t
-  :bind
-  ;("M-." . 'lsp-find-definition)
-  ("M-t" . 'lsp-find-type)
-  ;("M-?" . 'lsp-find-references)
+  :hook ((c-mode
+          c++-mode
+          c-or-c++-mode
+          js-mode
+          js-jsx-mode
+          typescript-mode
+          python-mode
+          web-mode
+          rustic-mode
+          ) . lsp-deferred)
   :init
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (setq lsp-keymap-prefix "C-c l")
   :config
+  (setq lsp-auto-guess-root t)
+  (setq lsp-log-io nil)
+  (setq lsp-restart 'auto-restart)
+  (setq lsp-enable-imenu t)
+  (setq lsp-enable-snippet t)
+  (setq lsp-idle-delay 0.5)
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy")
+  (setq lsp-rust-analyzer-server-display-inlay-hints t)
   (setq lsp-auto-guess-root nil)
-  (setq lsp-completion-enable 1)
-  (setq lsp-enable-dap-auto-configure 1)
-  (setq lsp-enable-xref 1)
-  (setq lsp-enable-file-watchers nil)
-  (setq lsp-enable-imenu 1)
-  (setq lsp-enable-indentation 1)
-  :hook (
-         (rust-mode . lsp-deferred)
-         (typescript-mode . lsp-deferred))
+  (setq lsp-completion-enable t)
+  (setq lsp-enable-dap-auto-configure t)
+  (setq lsp-enable-xref t)
+  (setq lsp-enable-indentation t)
+  :hook
+  (
+   (rustic-mode . lsp-deferred)
+   (typescript-mode . lsp-deferred)
+   (python-mode . lsp-deferred))
   :commands (lsp lsp-deferred))
 
 (use-package lsp-ui
   :ensure t
   :config
-  ;; lsp-ui-sideline
-  (lsp-ui-sideline-enable nil)
   ;; lsp-ui-peek
-  (setq lsp-ui-peek-enable 1)
-  (setq lsp-ui-peek-always-show 1)
-  (setq lsp-ui-peek-show-directory 1)
+  (setq lsp-ui-peek-enable t)
+  (setq lsp-ui-peek-always-show t)
+  (setq lsp-ui-peek-show-directory t)
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
   ;; lsp-ui-doc
-  (lsp-ui-doc-enable 1)
-  (setq lsp-ui-doc-delay .1)
-  (setq lsp-ui-doc-show-with-cursor 1)
-  (setq lsp-ui-doc-show-with-mouse 1)
+  (lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-header t)
+  (setq lsp-ui-doc-include-signature t)
+  (setq lsp-ui-doc-delay 0.05)
+  (setq lsp-ui-doc-show-with-cursor t)
+  (setq lsp-ui-doc-show-with-mouse t)
   (setq lsp-ui-doc-alignment 'window)
+  ;; lsp-ui-sideline
+  (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-delay .05)
+  (setq lsp-ui-sideline-show-hover t)
   ;; lsp-ui-imenu
-  (setq lsp-ui-imenu-auto-refresh 1)
-  (setq lsp-ui-imenu-auto-refresh-delay .1)
+  (setq lsp-ui-imenu-auto-refresh t)
+  (setq lsp-ui-imenu-auto-refresh-delay .05)
   :commands lsp-ui-mode)
 
 (use-package lsp-ivy
@@ -544,32 +561,23 @@
   (flycheck-mode 1))
 
 ;; rust
-(use-package rust-mode
-  :ensure t
-  :bind
-  ("C-c g" . rust-run)
-  ("C-c t" . rust-test)
-  ("C-c b" . cargo-process-build)
-  :init
-  (which-function-mode 1)
-  (setq compilation-error-regexp-alist-alist
-    (cons '(cargo "^\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\): \\([0-9]+\\):\\([0-9]+\\) \\(?:[Ee]rror\\|\\([Ww]arning\\)\\):" 1 (2 . 4) (3 . 5) (6))
-      compilation-error-regexp-alist-alist))
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
   :config
-  (company-quickhelp-mode 1)
-  (flycheck-mode 1)
-  (setq rust-format-on-save t))
+  (setq rustic-format-on-save nil)
+  (setq rustic-lsp-server 'rust-analyzer)
+  (setq rustic-analyzer-command '("rust-analyzer")))
 
 (use-package toml-mode :ensure t)
-
-(use-package cargo
-  :ensure t
-  :hook (rust-mode . cargo-minor-mode)
-  :diminish cargo-minor-mode)
-
-(use-package flycheck-rust
-  :ensure t
-  :config (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;; typescript
 (use-package typescript-mode
