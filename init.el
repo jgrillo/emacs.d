@@ -359,7 +359,7 @@
 (use-package company-quickhelp
   :ensure t
   :config
-  (setq company-quickhelp-delay .1))
+  (setq company-quickhelp-delay .05))
 
 (use-package hl-todo
   :ensure t
@@ -490,15 +490,14 @@
   (setq read-process-output-max (* 1024 1024)) ;; 1mb
   (setq lsp-keymap-prefix "C-c l")
   :config
-  (setq lsp-auto-guess-root t)
+  (setq lsp-auto-guess-root nil)
   (setq lsp-log-io nil)
   (setq lsp-restart 'auto-restart)
   (setq lsp-enable-imenu t)
   (setq lsp-enable-snippet t)
-  (setq lsp-idle-delay 0.5)
+  (setq lsp-idle-delay 0.05)
   (setq lsp-rust-analyzer-cargo-watch-command "clippy")
   (setq lsp-rust-analyzer-server-display-inlay-hints t)
-  (setq lsp-auto-guess-root nil)
   (setq lsp-completion-enable t)
   (setq lsp-enable-dap-auto-configure t)
   (setq lsp-enable-xref t)
@@ -520,13 +519,16 @@
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
   ;; lsp-ui-doc
-  (lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-doc-header t)
   (setq lsp-ui-doc-include-signature t)
   (setq lsp-ui-doc-delay 0.05)
   (setq lsp-ui-doc-show-with-cursor t)
   (setq lsp-ui-doc-show-with-mouse t)
-  (setq lsp-ui-doc-alignment 'window)
+  (setq lsp-ui-doc-position 'top)
+  (setq lsp-ui-doc-alignment 'frame)
+  (setq lsp-ui-doc-use-childframe nil)
+  (setq lsp-ui-doc-use-webkit nil)
   ;; lsp-ui-sideline
   (setq lsp-ui-sideline-show-code-actions t)
   (setq lsp-ui-sideline-delay .05)
