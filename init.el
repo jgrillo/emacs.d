@@ -271,8 +271,7 @@
   :config
   (diminish 'abbrev-mode)
   (diminish 'flyspell-mode)
-  (diminish 'flyspell-prog-mode)
-  (diminish 'eldoc-mode))
+  (diminish 'flyspell-prog-mode))
 
 (use-package magit
   :ensure t
@@ -502,6 +501,13 @@
   (setq lsp-enable-dap-auto-configure t)
   (setq lsp-enable-xref t)
   (setq lsp-enable-indentation t)
+  ;; eldoc
+  (setq lsp-eldoc-enable-hover t)
+  (setq lsp-eldoc-render-all t)
+  (setq eldoc-idle-delay 0.05)
+      ;; signature
+  (setq lsp-signature-auto-activate t)
+  (setq lsp-signature-render-documentation t)
   :hook
   (
    (rustic-mode . lsp-deferred)
@@ -519,16 +525,19 @@
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
   ;; lsp-ui-doc
+  ;;
+  ;; disabled for now because it crashes emacs-28.1 (see
+  ;; https://github.com/emacs-lsp/lsp-ui/issues/697)
   (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-doc-header t)
-  (setq lsp-ui-doc-include-signature t)
-  (setq lsp-ui-doc-delay 0.05)
-  (setq lsp-ui-doc-show-with-cursor t)
-  (setq lsp-ui-doc-show-with-mouse t)
-  (setq lsp-ui-doc-position 'top)
-  (setq lsp-ui-doc-alignment 'frame)
-  (setq lsp-ui-doc-use-childframe nil)
-  (setq lsp-ui-doc-use-webkit nil)
+  ;; (setq lsp-ui-doc-header nil)
+  ;; (setq lsp-ui-doc-delay 0.05)
+  ;; (setq lsp-ui-doc-show-with-cursor nil)
+  ;; (setq lsp-ui-doc-show-with-mouse nil)
+  ;; (setq lsp-ui-doc-position 'top)
+  ;; (setq lsp-ui-doc-alignment 'frame)
+  ;; (setq lsp-ui-doc-use-childframe nil)
+  ;; (setq lsp-ui-doc-use-webkit nil)
+  ;;
   ;; lsp-ui-sideline
   (setq lsp-ui-sideline-show-code-actions t)
   (setq lsp-ui-sideline-delay .05)
