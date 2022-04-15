@@ -504,10 +504,14 @@
   ;; eldoc
   (setq lsp-eldoc-enable-hover t)
   (setq lsp-eldoc-render-all t)
+  (setq eldoc-echo-area-prefer-doc-buffer t)
+  (setq eldoc-echo-area-use-multiline-p 0.2)
+  (setq eldoc-echo-area-display-truncation-message t)
   (setq eldoc-idle-delay 0.05)
-      ;; signature
+  ;; signature
   (setq lsp-signature-auto-activate t)
-  (setq lsp-signature-render-documentation t)
+  (setq lsp-signature-render-documentation nil)
+  ;;(setq lsp-signature-doc-lines 10)
   :hook
   (
    (rustic-mode . lsp-deferred)
@@ -540,6 +544,8 @@
   ;;
   ;; lsp-ui-sideline
   (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-diagnostic-max-line-length 79)
+  (setq lsp-ui-sideline-diagnostic-max-lines 10)
   (setq lsp-ui-sideline-delay .05)
   (setq lsp-ui-sideline-show-hover t)
   ;; lsp-ui-imenu
