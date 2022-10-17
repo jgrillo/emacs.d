@@ -509,12 +509,7 @@
   (setq lsp-rust-analyzer-display-parameter-hints t)
   (setq lsp-rust-analyzer-display-reborrow-hints t)
   ;; eldoc
-  (setq lsp-eldoc-enable-hover t)
-  (setq lsp-eldoc-render-all t)
-  (setq eldoc-echo-area-prefer-doc-buffer t)
-  (setq eldoc-echo-area-use-multiline-p 0.2)
-  (setq eldoc-echo-area-display-truncation-message t)
-  (setq eldoc-idle-delay 0.05)
+  (setq lsp-eldoc-enable-hover nil)
   ;; signature
   (setq lsp-signature-auto-activate t)
   (setq lsp-signature-render-documentation nil)
@@ -536,18 +531,15 @@
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
   ;; lsp-ui-doc
-  ;;
-  ;; disabled for now because it crashes emacs-28.1 (see
-  ;; https://github.com/emacs-lsp/lsp-ui/issues/697)
-  (setq lsp-ui-doc-enable nil)
-  ;; (setq lsp-ui-doc-header nil)
-  ;; (setq lsp-ui-doc-delay 0.05)
-  ;; (setq lsp-ui-doc-show-with-cursor nil)
-  ;; (setq lsp-ui-doc-show-with-mouse nil)
-  ;; (setq lsp-ui-doc-position 'top)
-  ;; (setq lsp-ui-doc-alignment 'frame)
-  ;; (setq lsp-ui-doc-use-childframe nil)
-  ;; (setq lsp-ui-doc-use-webkit nil)
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-header t)
+  (setq lsp-ui-doc-delay 0.05)
+  (setq lsp-ui-doc-show-with-cursor t)
+  (setq lsp-ui-doc-show-with-mouse t)
+  (setq lsp-ui-doc-position 'at-point)
+  (setq lsp-ui-doc-alignment 'frame)
+  (setq lsp-ui-doc-use-childframe t)
+  (setq lsp-ui-doc-use-webkit t)
   ;;
   ;; lsp-ui-sideline
   (setq lsp-ui-sideline-show-code-actions t)
