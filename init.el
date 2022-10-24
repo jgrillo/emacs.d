@@ -536,7 +536,7 @@
   (setq lsp-ui-doc-delay 0.05)
   (setq lsp-ui-doc-show-with-cursor t)
   (setq lsp-ui-doc-show-with-mouse t)
-  (setq lsp-ui-doc-position 'at-point)
+  (setq lsp-ui-doc-position 'top)
   (setq lsp-ui-doc-alignment 'frame)
   (setq lsp-ui-doc-use-childframe t)
   (setq lsp-ui-doc-use-webkit t)
