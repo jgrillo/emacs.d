@@ -539,7 +539,7 @@
   (setq lsp-ui-doc-position 'top)
   (setq lsp-ui-doc-alignment 'frame)
   (setq lsp-ui-doc-use-childframe t)
-  (setq lsp-ui-doc-use-webkit t)
+  (setq lsp-ui-doc-use-webkit nil)
   ;;
   ;; lsp-ui-sideline
   (setq lsp-ui-sideline-show-code-actions t)
