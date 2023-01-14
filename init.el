@@ -261,7 +261,10 @@
 (use-package zenburn-theme
   :ensure t
   :config
-  (load-theme 'zenburn t))
+  (load-theme 'zenburn t)
+  (setq zenburn-use-variable-pitch t)
+  (setq zenburn-scale-org-headlines t)
+  (setq zenburn-scale-outline-headlines t))
 
 (use-package anti-zenburn-theme
   :ensure t)
@@ -282,9 +285,6 @@
   :init
   (setq projectile-project-search-path '("~/src"))
   :config
-  ;; I typically use this keymap prefix on macOS
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  ;; On Linux, however, I usually go with another one
   (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
   (global-set-key (kbd "C-c p") 'projectile-command-map)
   (projectile-mode +1))
@@ -336,7 +336,8 @@
   :mode (("\\.md\\'" . gfm-mode)
          ("\\.markdown\\'" . gfm-mode))
   :config
-  (setq markdown-fontify-code-blocks-natively t))
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-header-scaling nil))
 
 (use-package yaml-mode
   :ensure t)
@@ -540,8 +541,8 @@
   (setq lsp-ui-doc-alignment 'frame)
   (setq lsp-ui-doc-use-childframe t)
   (setq lsp-ui-doc-use-webkit nil)
-  ;;
   ;; lsp-ui-sideline
+  (custom-set-faces '(markdown-code-face ((t (:inherit default)))))
   (setq lsp-ui-sideline-show-code-actions t)
   (setq lsp-ui-sideline-diagnostic-max-line-length 79)
   (setq lsp-ui-sideline-diagnostic-max-lines 10)
