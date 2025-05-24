@@ -45,7 +45,11 @@
   (package-refresh-contents))
 
 (setq user-full-name "Jesse C. Grillo"
-      user-mail-address "jgrillo@graplsecurity.com")
+      user-mail-address "jgrillo@protonmail.com")
+
+;; use ripgrep instead of grep
+(setq grep-find-command
+      '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel || pwd)" . 27))
 
 ;; Always load newest byte code
 (setq load-prefer-newer t)
@@ -269,13 +273,6 @@
 (use-package anti-zenburn-theme
   :ensure t)
 
-(use-package diminish
-  :ensure t
-  :config
-  (diminish 'abbrev-mode)
-  (diminish 'flyspell-mode)
-  (diminish 'flyspell-prog-mode))
-
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status)))
@@ -297,8 +294,7 @@
   (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
   (add-hook 'ielm-mode-hook #'paredit-mode)
   (add-hook 'lisp-mode-hook #'paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
-  (diminish 'paredit-mode "()"))
+  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
 (use-package easy-kill
   :ensure t
@@ -320,6 +316,18 @@
   (setq whitespace-line-column 80) ;; limit line length
   (setq whitespace-style '(face tabs empty trailing lines-tail)))
 
+;; tree-sitter
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+(use-package jsonrpc
+  :ensure t)
+
 (use-package web-mode
   :ensure t
   :custom
@@ -339,6 +347,10 @@
   (setq markdown-fontify-code-blocks-natively t)
   (setq markdown-header-scaling nil))
 
+(use-package mermaid-mode
+  :ensure t
+  :mode (("\\.mermaid" . mermaid-mode)))
+
 (use-package yaml-mode
   :ensure t)
 
@@ -346,15 +358,14 @@
   :ensure t
   :config
   (setq company-idle-delay 0.1)
-  (setq company-show-numbers t)
+  (setq company-show-quick-access t)
   (setq company-tooltip-limit 10)
   (setq company-minimum-prefix-length 2)
   (setq company-tooltip-align-annotations t)
   ;; invert the navigation direction if the the completion popup-isearch-match
   ;; is displayed on top (happens near the bottom of windows)
   (setq company-tooltip-flip-when-above t)
-  (global-company-mode)
-  (diminish 'company-mode))
+  (global-company-mode))
 
 (use-package company-quickhelp
   :ensure t
@@ -401,8 +412,7 @@
   :config
   ;; add integration with ace-window
   (add-to-list 'super-save-triggers 'ace-window)
-  (super-save-mode +1)
-  (diminish 'super-save-mode))
+  (super-save-mode +1))
 
 (use-package crux
   :ensure t
@@ -443,8 +453,7 @@
 (use-package which-key
   :ensure t
   :config
-  (which-key-mode +1)
-  (diminish 'which-key-mode))
+  (which-key-mode +1))
 
 (use-package undo-tree
   :ensure t
@@ -453,8 +462,7 @@
   (setq undo-tree-history-directory-alist
         `((".*" . ,temporary-file-directory)))
   (setq undo-tree-auto-save-history t)
-  (global-undo-tree-mode +1)
-  (diminish 'undo-tree-mode))
+  (global-undo-tree-mode +1))
 
 (use-package swiper
   :ensure t
@@ -471,130 +479,79 @@
 (use-package volatile-highlights
   :ensure t
   :config
-  (volatile-highlights-mode +1)
-  (diminish 'volatile-highlights-mode))
+  (volatile-highlights-mode +1))
 
-;; lsp
-(use-package lsp-mode
-  :hook ((c-mode
-          c++-mode
-          c-or-c++-mode
-          js-mode
-          js-jsx-mode
-          typescript-mode
-          python-mode
-          web-mode
-          rustic-mode
-          ) . lsp-deferred)
-  :init
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
-  (setq lsp-keymap-prefix "C-c l")
-  :config
-  (setq lsp-auto-guess-root nil)
-  (setq lsp-log-io nil)
-  (setq lsp-restart 'auto-restart)
-  (setq lsp-enable-imenu t)
-  (setq lsp-enable-snippet t)
-  (setq lsp-idle-delay 0.05)
-  (setq lsp-completion-enable t)
-  (setq lsp-enable-dap-auto-configure t)
-  (setq lsp-enable-xref t)
-  (setq lsp-enable-indentation t)
-  ;; rust-analyzer
-  (setq lsp-rust-analyzer-cargo-watch-command "clippy")
-  (setq lsp-rust-analyzer-server-display-inlay-hints t)
-  (setq lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-  (setq lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names t)
-  (setq lsp-rust-analyzer-display-chaining-hints t)
-  (setq lsp-rust-analyzer-display-closure-return-type-hints t)
-  (setq lsp-rust-analyzer-display-parameter-hints t)
-  (setq lsp-rust-analyzer-display-reborrow-hints t)
-  ;; eldoc
-  (setq lsp-eldoc-enable-hover nil)
-  ;; signature
-  (setq lsp-signature-auto-activate t)
-  (setq lsp-signature-render-documentation nil)
-  ;;(setq lsp-signature-doc-lines 10)
-  :hook
-  (
-   (rustic-mode . lsp-deferred)
-   (typescript-mode . lsp-deferred)
-   (python-mode . lsp-deferred))
-  :commands (lsp lsp-deferred))
-
-(use-package lsp-ui
+(use-package yasnippet
   :ensure t
   :config
-  ;; lsp-ui-peek
-  (setq lsp-ui-peek-enable t)
-  (setq lsp-ui-peek-always-show t)
-  (setq lsp-ui-peek-show-directory t)
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-  ;; lsp-ui-doc
-  (setq lsp-ui-doc-enable t)
-  (setq lsp-ui-doc-header t)
-  (setq lsp-ui-doc-delay 0.05)
-  (setq lsp-ui-doc-show-with-cursor t)
-  (setq lsp-ui-doc-show-with-mouse t)
-  (setq lsp-ui-doc-position 'top)
-  (setq lsp-ui-doc-alignment 'frame)
-  (setq lsp-ui-doc-use-childframe t)
-  (setq lsp-ui-doc-use-webkit nil)
-  ;; lsp-ui-sideline
-  (custom-set-faces '(markdown-code-face ((t (:inherit default)))))
-  (setq lsp-ui-sideline-show-code-actions t)
-  (setq lsp-ui-sideline-diagnostic-max-line-length 79)
-  (setq lsp-ui-sideline-diagnostic-max-lines 10)
-  (setq lsp-ui-sideline-delay .05)
-  (setq lsp-ui-sideline-show-hover t)
-  ;; lsp-ui-imenu
-  (setq lsp-ui-imenu-auto-refresh t)
-  (setq lsp-ui-imenu-auto-refresh-delay .05)
-  :commands lsp-ui-mode)
+  (yas-global-mode))
 
-(use-package lsp-ivy
+;; eglot
+(use-package eglot-x
+  :vc (:url https://github.com/nemethf/eglot-x)
   :ensure t
-  :commands lsp-ivy-workspace-symbol)
+  :config
+  (with-eval-after-load 'eglot
+    (require 'eglot-x)
+    (eglot-x-setup)))
 
-;; optionally if you want to use debugger
-;; (use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package")
+  (require 'vc-use-package))
+
+(setq eglot-extend-to-xref t)
+(setq eglot-connect-timeout nil)
+(when (executable-find "emacs-lsp-booster")
+  (use-package eglot-booster
+    :vc (:url "https://github.com/jdtsmith/eglot-booster")
+    :after eglot
+    :config (eglot-booster-mode)))
+
+;; terraform
+(use-package terraform-mode
+  :ensure t)
 
 ;; python
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp-deferred))))
-
 (use-package pyvenv
   :ensure t)
 
 (use-package python-mode
   :ensure t
   :config
+  (require 'eglot)
+  (setq python-check-comand "ruff")
+  (add-hook 'python-mode-hook #'flymake-mode)
+  (add-hook 'python-ts-mode-hook #'flymake-mode)
+  (add-to-list 'eglot-server-programs '((python-mode python-ts-mode) "ruff-lsp"))
   (company-quickhelp-mode 1)
   (flycheck-mode 1))
 
 ;; rust
 (use-package rustic
-  :ensure
-  :bind (:map rustic-mode-map
-              ("M-j" . lsp-ui-imenu)
-              ("M-?" . lsp-find-references)
-              ("C-c C-c l" . flycheck-list-errors)
-              ("C-c C-c a" . lsp-execute-code-action)
-              ("C-c C-c r" . lsp-rename)
-              ("C-c C-c q" . lsp-workspace-restart)
-              ("C-c C-c Q" . lsp-workspace-shutdown)
-              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :ensure t
   :config
+  (setq rustic-lsp-client 'eglot)
+  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
   (setq rustic-format-on-save nil)
   (setq rustic-lsp-server 'rust-analyzer)
+  (setq rustic-lsp-client 'eglot)
   (setq rustic-analyzer-command '("rust-analyzer")))
 
 (use-package toml-mode :ensure t)
+
+;; go
+(use-package go-mode
+  :config
+  (setenv "CGO_FLAGS_ALLOW" "-ltcmalloc")
+  (setenv "CGO_CXXFLAGS_ALLOW" "-lpthread|-ltcmalloc")
+  ; (setenv "CGO_CPPFLAGS" "-I /path/to/rocksdb@x.x.x/../include")
+  ; (setenv "CPATH" "/path/to/include")
+  ; (setenv "LIBRARY_PATH" "/path/to/lib")
+  ; (require 'dap-dlv-go)
+  (add-hook 'go-mode-hook #'whitespace-color-off)
+  (company-quickhelp-mode 1)
+  (flycheck-mode 1)
+  :ensure t)
 
 ;; typescript
 (use-package typescript-mode
@@ -639,3 +596,18 @@
 
 ;;; init.el ends here
 (put 'upcase-region 'disabled nil)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-vc-selected-packages
+   '((eglot-x :vc-backend Git :url "https://github.com/nemethf/eglot-x")
+     (vc-use-package :vc-backend Git :url
+                     "https://github.com/slotThe/vc-use-package"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
