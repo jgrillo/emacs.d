@@ -45,7 +45,7 @@
   (package-refresh-contents))
 
 (setq user-full-name "Jesse C. Grillo"
-      user-mail-address "jgrillo@protonmail.com")
+      user-mail-address "jesse.grillo@gmail.com")
 
 ;; use ripgrep instead of grep
 (setq grep-find-command
@@ -55,8 +55,8 @@
 (setq load-prefer-newer t)
 
 ;; reduce the frequency of garbage collection by making it happen on
-;; each 100MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold (* 100 1024 1024)) ;; 100mb
+;; each 100MiB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold (* 100 1024 1024)) ;; 100MiB
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
