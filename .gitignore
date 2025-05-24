@@ -25,3 +25,6 @@ var
 .lsp-*
 .cache
 eln-cache
+projects
+tree-sitter
+.dap-breakpoints
