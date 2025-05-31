@@ -487,17 +487,17 @@
   (yas-global-mode))
 
 ;; eglot
+(unless (package-installed-p 'vc-use-package)
+  (package-vc-install "https://github.com/slotThe/vc-use-package")
+  (require 'vc-use-package))
+
 (use-package eglot-x
-  :vc (:url https://github.com/nemethf/eglot-x)
+  :vc (:url "https://github.com/nemethf/eglot-x")
   :ensure t
   :config
   (with-eval-after-load 'eglot
     (require 'eglot-x)
     (eglot-x-setup)))
-
-(unless (package-installed-p 'vc-use-package)
-  (package-vc-install "https://github.com/slotThe/vc-use-package")
-  (require 'vc-use-package))
 
 (setq eglot-extend-to-xref t)
 (setq eglot-connect-timeout nil)
@@ -601,10 +601,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-vc-selected-packages
-   '((eglot-x :vc-backend Git :url "https://github.com/nemethf/eglot-x")
-     (vc-use-package :vc-backend Git :url
-                     "https://github.com/slotThe/vc-use-package"))))
+ '(package-vc-selected-packages '((eglot-x :url "https://github.com/nemethf/eglot-x"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
